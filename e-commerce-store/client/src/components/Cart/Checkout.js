@@ -44,6 +44,7 @@ export default class Checkout extends Component {
         this.cart = [];
         this.clearCart = [];
         this.OrderID = "";
+        this.directTo = "";
     }
 
     async componentDidMount() {
@@ -129,13 +130,10 @@ export default class Checkout extends Component {
     updateAccountWithOrderId() {
         return new Promise((resolve) => {
             axios
-                .post(
-                    "http://localhost:4000/catweallgetalong/accounts/update",
-                    {
-                        _id: this.state.id,
-                        orderId: this.OrderID,
-                    }
-                )
+                .post("http://localhost:4000/catweallgetalong/carts/update", {
+                    _id: this.state.id,
+                    orderId: this.OrderID,
+                })
                 .then(function (response) {
                     console.log(response);
                     resolve("resolved");
@@ -186,7 +184,7 @@ export default class Checkout extends Component {
                     if (res.data === true) {
                         this.directTo = "/checkout";
                     } else {
-                        this.directTo = "/account";
+                        this.directTo = "/cart";
                     }
 
                     resolve("resolved");
@@ -229,10 +227,14 @@ export default class Checkout extends Component {
 
     componentWillUnmount() {
         // clear cart
-        this.clearCart();
+        if (this.directTo === "/checkout" && this.cart.length > 0)
+            this.clearCart();
     }
 
     render() {
+        if (this.directTo === "/cart") {
+            return <Redirect to={this.directTo} />;
+        }
         if (this.state.order_confirmed) {
             return (
                 <div className="container mt-5">
