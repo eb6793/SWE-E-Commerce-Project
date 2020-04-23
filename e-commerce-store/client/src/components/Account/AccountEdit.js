@@ -174,6 +174,7 @@ export default class AccountEdit extends Component {
                 });
         });
     }
+
     checkValidityEmail() {
         return new Promise((resolve) => {
             axios

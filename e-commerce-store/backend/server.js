@@ -136,7 +136,7 @@ accountsRoutes.route("/edit").post((req, res) => {
     );
 });
 
-// End point update account by id and update eveyrthing except password
+// End point update account by id and push order history
 accountsRoutes.route("/update").post((req, res) => {
     accounts.findByIdAndUpdate(
         { _id: mongoose.Types.ObjectId(req.body._id) },
