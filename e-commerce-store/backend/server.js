@@ -282,7 +282,7 @@ accountsRoutes.route("/add").post(function (req, res) {
 
 /* *********************************************************************** */
 
-// Endpoint check if email address exist and send id
+// Endpoint check if email address exist and 1 or 0
 accountsRoutes.route("/email/:email").get(function (req, res) {
     // find query with email address, and only return COUNT
     accounts.countDocuments(
