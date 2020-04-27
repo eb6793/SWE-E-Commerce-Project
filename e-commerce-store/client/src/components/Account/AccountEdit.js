@@ -70,7 +70,6 @@ export default class AccountEdit extends Component {
 
     async componentDidMount() {
         await this.loadUserValues();
-        this.originalEmail = this.state.email_address;
     }
 
     checkDuplicateEmail() {
@@ -93,18 +92,18 @@ export default class AccountEdit extends Component {
 
     updateAccountInDB() {
         return new Promise((resolve) => {
+            console.log(this.state.address_secondary);
             axios
                 .post("http://localhost:4000/catweallgetalong/accounts/edit", {
-                    shipping_address: [
-                        {
-                            street1: this.state.address_line1,
-                            street2: this.state.address_line2,
-                            secondary: this.state.secondary,
-                            city: this.state.address_city,
-                            state: this.state.address_state,
-                            zipcode: this.state.address_zipcode,
-                        },
-                    ],
+                    shipping_address: {
+                        street1: this.state.address_line1,
+                        street2: this.state.address_line2,
+                        secondary: this.state.address_secondary,
+                        city: this.state.address_city,
+                        state: this.state.address_state,
+                        zipcode: this.state.address_zipcode,
+                    },
+
                     _id: this.state.id,
                     first_name: this.state.first_name,
                     last_name: this.state.last_name,
@@ -154,12 +153,20 @@ export default class AccountEdit extends Component {
                         if (lookup.result[0].analysis.dpvMatchCode === "Y") {
                             let res = lookup.result[0].lastLine.split(" ");
                             this.setState({
-                                address_line1: lookup.result[0].deliveryLine1,
-                                address_line2: lookup.result[0].deliveryLine2,
+                                address_line1: lookup.result[0].deliveryLine1.substring(
+                                    0,
+                                    this.state.address_line1.length
+                                ),
                                 address_city: res[0],
                                 address_state: res[1],
                                 address_zipcode: res[2],
                             });
+                            if (lookup.result[0].deliveryLine2 != null) {
+                                this.setState({
+                                    address_line2:
+                                        lookup.result[0].deliveryLine2,
+                                });
+                            }
                             this.address_verified = true;
                         } else {
                             this.address_verified = false;
@@ -203,23 +210,29 @@ export default class AccountEdit extends Component {
                     "http://localhost:4000/catweallgetalong/sessions/user-info"
                 )
                 .then((response) => {
-                    this.setState({
-                        address_line1:
-                            response.data[0].shipping_address[0].street1,
-                        address_line2:
-                            response.data[0].shipping_address[0].street2,
-                        address_secondary:
-                            response.data[0].shipping_address[0].secondary,
-                        address_zipcode:
-                            response.data[0].shipping_address[0].zipcode,
-                        address_city: response.data[0].shipping_address[0].city,
-                        address_state:
-                            response.data[0].shipping_address[0].state,
-                        email_address: response.data[0].email_address,
-                        first_name: response.data[0].first_name,
-                        last_name: response.data[0].last_name,
-                        id: response.data[0]._id,
-                    });
+                    this.setState(
+                        {
+                            address_line1:
+                                response.data[0].shipping_address[0].street1,
+                            address_line2:
+                                response.data[0].shipping_address[0].street2,
+                            address_secondary:
+                                response.data[0].shipping_address[0].secondary,
+                            address_zipcode:
+                                response.data[0].shipping_address[0].zipcode,
+                            address_city:
+                                response.data[0].shipping_address[0].city,
+                            address_state:
+                                response.data[0].shipping_address[0].state,
+                            email_address: response.data[0].email_address,
+                            first_name: response.data[0].first_name,
+                            last_name: response.data[0].last_name,
+                            id: response.data[0]._id,
+                        },
+                        () => {
+                            this.originalEmail = this.state.email_address;
+                        }
+                    );
                 })
                 .catch(function (error) {
                     console.log(error);
@@ -279,7 +292,7 @@ export default class AccountEdit extends Component {
             } else {
                 this.setState(
                     {
-                        isEmailChanged: false,
+                        isEmailChanged: true,
                     },
                     resolve("resolved")
                 );
@@ -289,7 +302,9 @@ export default class AccountEdit extends Component {
 
     async handleOnSubmit(event) {
         event.preventDefault();
-        await this.checkEmailChanged();
+        if (this.state.isEmailChanged === true) {
+            await this.checkEmailChanged();
+        }
         // check address is valid
         if (
             this.state.address_line1.length > 0 &&

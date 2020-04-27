@@ -92,6 +92,7 @@ class AccountCreate extends Component {
 
     addAccountToDB() {
         return new Promise((resolve) => {
+            console.log(this.state.address_secondary);
             axios
                 .post("http://localhost:4000/catweallgetalong/accounts/add", {
                     first_name: this.state.first_name,
@@ -152,12 +153,20 @@ class AccountCreate extends Component {
                         if (lookup.result[0].analysis.dpvMatchCode === "Y") {
                             let res = lookup.result[0].lastLine.split(" ");
                             this.setState({
-                                address_line1: lookup.result[0].deliveryLine1,
-                                address_line2: lookup.result[0].deliveryLine2,
+                                address_line1: lookup.result[0].deliveryLine1.substring(
+                                    0,
+                                    this.state.address_line1.length
+                                ),
                                 address_city: res[0],
                                 address_state: res[1],
                                 address_zipcode: res[2],
                             });
+                            if (lookup.result[0].deliveryLine2 != null) {
+                                this.setState({
+                                    address_line2:
+                                        lookup.result[0].deliveryLine2,
+                                });
+                            }
                             this.address_verified = true;
                         } else {
                             this.address_verified = false;
@@ -355,6 +364,7 @@ class AccountCreate extends Component {
                                         address_line1: event.target.value,
                                     })
                                 }
+                                value={this.state.address_line1}
                             />
                         </div>
                         <div className="form-group">
@@ -369,6 +379,7 @@ class AccountCreate extends Component {
                                         address_line2: event.target.value,
                                     })
                                 }
+                                value={this.state.address_line2}
                             />
                         </div>
                         <div className="form-group">
@@ -385,6 +396,7 @@ class AccountCreate extends Component {
                                         address_secondary: event.target.value,
                                     })
                                 }
+                                value={this.state.address_secondary}
                             />
                         </div>
                         <div className="form-group">
@@ -399,6 +411,7 @@ class AccountCreate extends Component {
                                         address_city: event.target.value,
                                     })
                                 }
+                                value={this.state.address_city}
                             />
                         </div>
                         <div className="form-group">
@@ -413,6 +426,7 @@ class AccountCreate extends Component {
                                         address_zipcode: event.target.value,
                                     })
                                 }
+                                value={this.state.address_zipcode}
                             />
                         </div>
                         <div className="form-group">
@@ -432,6 +446,7 @@ class AccountCreate extends Component {
                                             address_state: event.target.value,
                                         })
                                     }
+                                    value={this.state.address_state}
                                 >
                                     <option value="">N/A</option>
                                     <option value="AK">Alaska</option>

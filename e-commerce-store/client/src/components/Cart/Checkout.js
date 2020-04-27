@@ -88,12 +88,20 @@ export default class Checkout extends Component {
                         if (lookup.result[0].analysis.dpvMatchCode === "Y") {
                             let res = lookup.result[0].lastLine.split(" ");
                             this.setState({
-                                address_line1: lookup.result[0].deliveryLine1,
-                                address_line2: lookup.result[0].deliveryLine2,
+                                address_line1: lookup.result[0].deliveryLine1.substring(
+                                    0,
+                                    this.state.address_line1.length
+                                ),
                                 address_city: res[0],
                                 address_state: res[1],
                                 address_zipcode: res[2],
                             });
+                            if (lookup.result[0].deliveryLine2 != null) {
+                                this.setState({
+                                    address_line2:
+                                        lookup.result[0].deliveryLine2,
+                                });
+                            }
                             this.address_verified = true;
                         } else {
                             this.address_verified = false;

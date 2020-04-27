@@ -15,7 +15,7 @@ let Account = new Schema({
         type: String,
     },
     shipping_address: {
-        type: Array, // 0=line1 of address, 1=line2 of address, 2=city, 3=state, 4=postal code
+        type: Array, // 0=line1 of address, 1=line2 of address, 2=secondaryline of address,  3=city, 4=state, 5=postal code
     },
     order_history: {
         type: Array, // each index is an array of order IDs
